@@ -1,0 +1,9 @@
+Changes
+MANIFEST
+Makefile.PL
+README
+lib/MooseX/Meta/Attribute/Index.pm
+t/00-load.t
+t/pod-coverage.t
+t/pod.t
+t/MooseX-Meta-Attribute-Index.t

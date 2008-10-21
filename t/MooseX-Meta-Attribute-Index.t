@@ -1,6 +1,6 @@
 
 use Test::More tests => 9;        
-BEGIN { diag 'MooseX::Meta::Attribute::Index'; }
+# BEGIN { diag 'MooseX::Meta::Attribute::Index'; }
 
 
 ##########

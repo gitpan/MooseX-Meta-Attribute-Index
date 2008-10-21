@@ -1,5 +1,8 @@
 Revision history for MooseX-Meta-Attribite-Trait-Index
 
-0.01    Date/time
+0.02    20 Oct 2008
+        - Added description to NAME section of POD.
+
+0.01    19 Oct 2008 
         First version, released on an unsuspecting world.
 
