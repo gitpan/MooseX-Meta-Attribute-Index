@@ -1,5 +1,5 @@
 
-use Test::More tests => 9;        
+use Test::More tests => 12;        
 # BEGIN { diag 'MooseX::Meta::Attribute::Index'; }
 
 
@@ -9,8 +9,9 @@ package App;
 
     BEGIN {
         use_ok( 'Moose' );
-        use_ok( 'MooseX::Meta::Attribute::Index' );
+        ok( with('MooseX::Meta::Attribute::Index'), "with OK" );
     }
+
 
     has attr_1 => (
                      traits  => [ qw/Index/ ],
@@ -35,14 +36,34 @@ package main;
     my $app = App->new( attr_1 => "foo", attr_2 => 42 );    
 
     isa_ok( $app, "App" );
+
+    ok( $app->meta->does_role( 'MooseX::Meta::Attribute::Index' ), 
+            'Class does role MooseX::Meta::Attribute::Index' 
+    ); 
+
     ok( $app->attr_1 eq "foo",  "Attribute 1" );
     ok( $app->attr_2 == 42, "Attribute 2" );
 
+    ok( $app->get_attribute_index( "attr_1" ) == 1, "get_attibute_index 1" ) ;
+    ok( $app->get_attribute_index( "attr_2" ) == 3, "get_attibute_index 2" ) ;
 
-    ok( $app->meta->get_attribute_index( "attr_1" ) == 1, "Index 1 verified" ) ;
-    ok( $app->meta->get_attribute_index( "attr_2" ) == 3, "Index 2 verified" ) ;
+    ok( 
+        $app->get_attribute_by_index(1)->index == 1, 
+        "get_attribute_by_index 1" 
+    );
+    ok( 
+        $app->get_attribute_by_index(3)->index == 3, 
+        "get_attribute_by_index 2" 
+    );
 
-    ok( $app->meta->get_attribute_index( "attr_1" ) == 1, "Index 1 verified" ) ;
-    ok( $app->meta->get_attribute_index( "attr_2" ) == 3, "Index 2 verified" ) ;
+    ok( 
+        $app->get_attribute_name_by_index(1) eq 'attr_1', 
+        "get_attribute_name_by_index 1"
+    ); 
+    ok( 
+        $app->get_attribute_name_by_index(3) eq 'attr_2',
+        "get_attribute_name_by_index 3"
+    ); 
+
 
 

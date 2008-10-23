@@ -1,7 +1,63 @@
 package MooseX::Meta::Attribute::Index;
 
-    our $VERSION = 0.02;
+    our $VERSION = 0.03;
     our $AUTHORITY = 'cpan:CTBROWN';
+
+    use Moose::Role;
+    use Carp;
+
+
+  # Given the name of the attribute return the attributes index
+    sub get_attribute_index { 
+
+        my $self = shift;
+        my $name = shift;
+
+        $self->meta->get_attribute( $name )->index 
+
+    }
+
+
+
+  # Given the index of the attribute return the attributes value
+    sub get_attribute_by_index {
+
+        my ($self, $index) = @_;
+        confess( "You cannot retrieve non integer valued indexes. ($index)" ) 
+            if ( $index =~ /\D/ ); 
+
+        foreach my $name ( keys %{ $self->meta->get_attribute_map } ) {
+            my $attribute = $self->meta->get_attribute( $name );
+            return ( $attribute ) if ( $attribute->index == $index );
+        }
+
+        carp( "There is no attribute with index, $index" );
+        return undef;
+    }
+
+
+
+  # Given the index, return attribute name
+    sub get_attribute_name_by_index {
+
+        my ($self, $index) = @_;  
+        # print "===>$index\t";
+        confess( "You cannot retrieve non integer valued indexes. ($index)" ) 
+            if ( $index =~ /\D/ ); 
+
+        foreach my $name ( keys %{ $self->meta->get_attribute_map } ) {
+            my $attribute = $self->meta->get_attribute( $name );
+            return ( $name ) if ( $attribute->index == $index );
+        }
+
+        carp( "There is no attribute with index, $index" );
+        return undef;
+
+    }
+
+
+
+package MooseX::Meta::Attribute::Trait::Index;
 
     use Moose::Role;
 
@@ -19,35 +75,12 @@ package MooseX::Meta::Attribute::Index;
     );
 
 
-
 package Moose::Meta::Attribute::Custom::Trait::Index;
     sub register_implementation { 
-        'MooseX::Meta::Attribute::Index' 
+        'MooseX::Meta::Attribute::Trait::Index' 
     };
-    
 
 
-package Moose::Meta::Class;
-
-    sub get_attribute_index { 
-
-        my $self = shift;
-        my $name = shift;
-
-        $self->get_attribute( $name )->index 
-            or confess( "There is no attribute. $name" );
-    }
-
-package Moose::Class;
-
-       sub get_attribute_index { 
-
-            my $self = shift;
-            my $name = shift;
-
-            $self->meta->get_attribute( $name )->index 
-                or confess( "There is no attribute. $name" );
-        }      
 
 
 1;
@@ -86,31 +119,52 @@ MooseX::Meta::Attribute::Index - Provides index meta attribute trait
     package main;
         my $app = App->new( attr_1 => 'foo', attr_2 => 42 );
         
-        $app->meta->get_attribute_index( "attr_1" );  # 0
-        $app->meta->get_attribute_index( "attr_2" );  # 1
+        $app->get_attribute_index( "attr_1" );  # 0
+        $app->get_attribute_index( "attr_2" );  # 1
+
+        $app->get_attribute_by_index(0); # returns attr_1 object
+        $app->get_attribute_by_index(1); # returns attr_2 object
+
+        $app->get_attribute_name_by_index(0); # returns attr_1 object
+        $app->get_attribute_name_by_index(1); # returns attr_2 object
 
 
 =head1 DESCRIPTION
 
-Implements a meta-attribute, B<index>, using traits.   The index meta 
-attribute is used for providing ordering of attributes.  This is useful
-in situations where the order of attributes matters.  For example, 
-see L<ODG::Record> where maintaining of the order of attributes allows 
-for a Moose-based record iterator.
+This module is a Moose role which implements a meta-attribute, B<index>
+, using traits. The index meta attribute is useful for ordered of 
+attributes.  In standard Moose, attributes are implemented via hash
+references and order is not preserved.  This module implements a 
+meta-attribute that can be used to track the order of attributes where 
+the order of attributes matters. For example, see L<ODG::Record> where 
+maintaining of the order of attributes allows for a Moose class to use 
+an array ref for storage rather than a hash ref.  
 
 The indexes must be defined and provided manually.  The indexs are 
 checked to ensure that negative indices are not used.
 
-In addition to the meta-attribute, a Moose::Meta::Class method, 
-C<get_attribute_index> is provided to retrieve the indices of an attribute.
-
+In addition to the meta-attribute, several methods are introduced to
+work with the indexed attributes.  See L<#methods> below.
 
 =head1 METHODS
 
-Moose::Meta::Class::get_attribute_index( $attr_name )
+The following methods are loaded into your class when this role is used.
 
-Returns the index for the named attribute.   
+=over
 
+=item get_attribute_index( $attr_name )
+
+Returns the index for the attribute c<$attr_name>
+
+=item get_attribute_by_index( $index )
+
+Returns the attribute associated with the index
+
+=item get_attribute_name_by_index( $index )
+
+Returns the attribute name associated with $index 
+
+=back
 
 =head1 SEE ALSO
 
