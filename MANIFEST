@@ -11,14 +11,11 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-lib/MooseX/Meta/Attribute/.Index.pm.swo
-lib/MooseX/Meta/Attribute/.Index.pm.swp
 lib/MooseX/Meta/Attribute/Index.pm
 Makefile.PL
 MANIFEST
 META.yml
 README
-t/.MooseX-Meta-Attribute-Index.t.swp
 t/00-load.t
 t/boilerplate.t
 t/MooseX-Meta-Attribute-Index.t

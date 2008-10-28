@@ -27,6 +27,13 @@ package App;
                      index=> 3
     );   
 
+    has attr_3 => (
+                    is      => 'rw'     ,
+                    isa     => 'Str'    ,
+                    default => 'This is not indexed' ,
+                    required=> 1
+    );
+
 
 
 ##########

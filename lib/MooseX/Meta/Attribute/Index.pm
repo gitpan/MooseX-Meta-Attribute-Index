@@ -1,6 +1,6 @@
 package MooseX::Meta::Attribute::Index;
 
-    our $VERSION = 0.03;
+    our $VERSION = 0.04;
     our $AUTHORITY = 'cpan:CTBROWN';
 
     use Moose::Role;
@@ -26,13 +26,15 @@ package MooseX::Meta::Attribute::Index;
         confess( "You cannot retrieve non integer valued indexes. ($index)" ) 
             if ( $index =~ /\D/ ); 
 
-        foreach my $name ( keys %{ $self->meta->get_attribute_map } ) {
-            my $attribute = $self->meta->get_attribute( $name );
-            return ( $attribute ) if ( $attribute->index == $index );
+        my $attr = $self->get_attribute_name_by_index( $index );
+        
+        if ( $attr ) {
+            return $self->meta->get_attribute( $attr );
+        } else {
+            carp( "There is no attribute with index, $index" );
+            return undef;
         }
 
-        carp( "There is no attribute with index, $index" );
-        return undef;
     }
 
 
@@ -47,7 +49,8 @@ package MooseX::Meta::Attribute::Index;
 
         foreach my $name ( keys %{ $self->meta->get_attribute_map } ) {
             my $attribute = $self->meta->get_attribute( $name );
-            return ( $name ) if ( $attribute->index == $index );
+            return ( $name ) 
+                if ( $attribute->can('index') and $attribute->index == $index );
         }
 
         carp( "There is no attribute with index, $index" );
@@ -144,7 +147,10 @@ The indexes must be defined and provided manually.  The indexs are
 checked to ensure that negative indices are not used.
 
 In addition to the meta-attribute, several methods are introduced to
-work with the indexed attributes.  See L<#methods> below.
+work with the indexed attributes.  See L<#methods> below.  If you just 
+want the meta attribute without the added methods, have your class use
+the role 'MooseX::Meta::Attribute::Trait::Index'.
+
 
 =head1 METHODS
 

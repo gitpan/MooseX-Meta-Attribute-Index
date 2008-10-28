@@ -1,5 +1,10 @@
 Revision history for MooseX-Meta-Attribite-Trait-Index
 
+0.04    27 Oct 2008
+        Thanks to sartak and autarch on #Moose
+        - Added check for existence of index before reporting value
+        - get_attribute_by_index calls get_attribute_name_by_index internally
+
 0.03    23 Oct 2008
         - Refactors package space.  Now with '...' will provide methods 
           to the class for working with indexed attribute.  These methods
